@@ -125,12 +125,19 @@ const el = {
 const state = {
   modeKey: "open-strings",
   answer: /** @type {QuizItem | null} */ (null),
-  audio: /** @type {HTMLAudioElement | null} */ (null),
+  audioCtx: /** @type {AudioContext | null} */ (null),
+  bufferCache: /** @type {Map<string, AudioBuffer>} */ (new Map()),
+  sourceNode: /** @type {AudioBufferSourceNode | null} */ (null),
   locked: false,
   correct: 0,
   wrong: 0,
   streak: 0,
 };
+
+const player = /** @type {HTMLAudioElement | null} */ (
+  document.getElementById("player")
+);
+
 
 function shuffle(arr) {
   const a = [...arr];
@@ -197,9 +204,87 @@ function showWave(answer) {
 }
 
 function stopAudio() {
-  if (state.audio) {
-    state.audio.pause();
-    state.audio.currentTime = 0;
+  if (state.sourceNode) {
+    try {
+      state.sourceNode.stop();
+    } catch {
+      /* already stopped */
+    }
+    state.sourceNode.disconnect();
+    state.sourceNode = null;
+  }
+  if (player) {
+    player.pause();
+    player.currentTime = 0;
+  }
+}
+
+async function ensureAudioCtx() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!state.audioCtx) state.audioCtx = new AC();
+  if (state.audioCtx.state === "suspended") {
+    await state.audioCtx.resume();
+  }
+  return state.audioCtx;
+}
+
+async function loadBuffer(url) {
+  const cached = state.bufferCache.get(url);
+  if (cached) return cached;
+  const ctx = await ensureAudioCtx();
+  if (!ctx) return null;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`音源取得失敗 HTTP ${res.status}`);
+  const arr = await res.arrayBuffer();
+  const buf = await ctx.decodeAudioData(arr.slice(0));
+  state.bufferCache.set(url, buf);
+  return buf;
+}
+
+async function playWithWebAudio(url) {
+  const ctx = await ensureAudioCtx();
+  if (!ctx) throw new Error("AudioContext 非対応");
+  const buf = await loadBuffer(url);
+  if (!buf) throw new Error("デコード失敗");
+  stopAudio();
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  state.sourceNode = src;
+  src.start(0);
+}
+
+async function playWithHtmlAudio(url) {
+  if (!player) throw new Error("audio 要素なし");
+  stopAudio();
+  player.src = url;
+  player.load();
+  await player.play();
+}
+
+async function playAnswer() {
+  if (!state.answer) return;
+  const url = state.answer.src;
+  try {
+    // LINE WebView では Web Audio の方が安定しやすい
+    await playWithWebAudio(url);
+    el.hint.textContent = "もう一度聴くこともできます";
+    setFeedback("", "");
+  } catch (webErr) {
+    console.warn("WebAudio failed, fallback to HTMLAudio", webErr);
+    try {
+      await playWithHtmlAudio(url);
+      el.hint.textContent = "もう一度聴くこともできます";
+      setFeedback("", "");
+    } catch (htmlErr) {
+      console.error(htmlErr);
+      const detail =
+        htmlErr && typeof htmlErr === "object" && "name" in htmlErr
+          ? `${htmlErr.name}: ${htmlErr.message || ""}`
+          : String(htmlErr);
+      setFeedback(`再生できませんでした（${detail}）`, "ng");
+    }
   }
 }
 
@@ -214,8 +299,10 @@ function nextQuestion() {
   state.locked = false;
   stopAudio();
   hideWave();
-  state.audio = new Audio(state.answer.src);
-  state.audio.preload = "auto";
+  // 裏でデコードを先行（失敗しても再生時に再試行）
+  if (state.answer) {
+    loadBuffer(state.answer.src).catch(() => {});
+  }
 
   setFeedback("", "");
   el.hint.textContent = "再生してから選択肢をタップ";
@@ -235,16 +322,13 @@ function nextQuestion() {
 }
 
 async function onPlay() {
-  if (!state.answer) return;
+  // タップ直後に AudioContext を起こす（iOS / LINE WebView 対策）
   try {
-    stopAudio();
-    state.audio = new Audio(state.answer.src);
-    await state.audio.play();
-    el.hint.textContent = "もう一度聴くこともできます";
+    await ensureAudioCtx();
   } catch (err) {
-    setFeedback("再生できませんでした（端末の音量も確認）", "ng");
-    console.error(err);
+    console.warn(err);
   }
+  await playAnswer();
 }
 
 function onChoose(item, btn) {
@@ -301,6 +385,15 @@ async function initLiff() {
 }
 
 el.play.addEventListener("click", onPlay);
+// iOS LINE では touchend の方がジェスチャとして通りやすい場合がある
+el.play.addEventListener(
+  "touchend",
+  (ev) => {
+    ev.preventDefault();
+    onPlay();
+  },
+  { passive: false },
+);
 el.mode.addEventListener("change", () => {
   state.modeKey = el.mode.value;
   state.correct = 0;

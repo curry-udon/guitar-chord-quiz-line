@@ -28,6 +28,8 @@
           ▶ 再生
         </button>
         <p class="hint" id="hint">再生してから選択肢をタップ</p>
+        <!-- LINE WebView / iOS 向け: DOM 上の audio を再利用する -->
+        <audio id="player" playsinline preload="auto" hidden></audio>
       </section>
 
       <section class="choices" id="choices" aria-label="選択肢"></section>
