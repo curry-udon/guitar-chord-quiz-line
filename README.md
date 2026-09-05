@@ -37,6 +37,7 @@ npm run dev
 | :--- | :--- |
 | 初級：開放弦 | 6〜1弦の開放弦（E / A / D / G / B / E）の音名あて |
 | カノン進行（C） | C / G / Am / Em / F |
+| ダイアトニック（C） | C / Dm / Em / F / G / Am / Bm(♭5) |
 | カノン進行（D） | D / A / Bm / F#m / G |
 
 開放弦は Freesound（Kyster / ナイロン弦の実録音）。コード音源も Freesound のプレビューMP3（`public/audio/`）。詳細は `public/audio/ATTRIBUTION.md`。

@@ -102,10 +102,11 @@ body {
   border-radius: 12px;
   background: var(--card);
   color: var(--text);
-  padding: 16px 10px;
-  font-size: 1.15rem;
+  padding: 16px 8px;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
+  line-height: 1.2;
 }
 
 .choice:disabled {

@@ -90,6 +90,19 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       { id: "F", label: "F", src: asset("audio/F.mp3") },
     ],
   },
+  "diatonic-c": {
+    name: "ダイアトニック（C）",
+    subtitle: "キーCの三和音を聞いて、コードを選んでください",
+    items: [
+      { id: "C", label: "C", src: asset("audio/C.mp3") },
+      { id: "Dm", label: "Dm", src: asset("audio/Dm.mp3") },
+      { id: "Em", label: "Em", src: asset("audio/Em.mp3") },
+      { id: "F", label: "F", src: asset("audio/F.mp3") },
+      { id: "G", label: "G", src: asset("audio/G.mp3") },
+      { id: "Am", label: "Am", src: asset("audio/Am.mp3") },
+      { id: "Bdim", label: "Bm(♭5)", src: asset("audio/Bdim.mp3") },
+    ],
+  },
   "canon-d": {
     name: "カノン進行（D）",
     subtitle: "音を聞いて、コードを選んでください",
@@ -151,7 +164,8 @@ function shuffle(arr) {
 /** 最大 6 択。開放弦はチューニング順のまま 6 つ全部出す */
 function pickChoices(pool, answer) {
   if (state.modeKey === "open-strings") return [...pool];
-  if (pool.length <= 6) return shuffle(pool);
+  // ダイアトニック7つなど、少数プールは全選択肢を出す
+  if (pool.length <= 7) return shuffle(pool);
   const others = shuffle(pool.filter((item) => item.id !== answer.id)).slice(
     0,
     5,

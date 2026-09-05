@@ -35,3 +35,5 @@ Downloaded: 2026-09-04 22:13
 - **e_full_nylon_speedy** — `e_full_nylon_speedy_8489.mp3` — https://freesound.org/s/8489/ — license: https://? — by SpeedY
 - **bm_mid_g_nylon_speedy** — `bm_mid_g_nylon_speedy_8461.mp3` — https://freesound.org/s/8461/ — license: https://
 - **c_full_nylon_speedy** — `c_full_nylon_speedy_8468.mp3` — https://freesound.org/s/8468/ — license: https://
+- **dm_full_nylon_speedy** — `Dm.mp3`（orig: `dm_full_nylon_speedy_8482.mp3`）— https://freesound.org/s/8482/ — SpeedY / Dmin_full_OK — CC (see page)
+- **bdim_yamaha_noise_collector** — `Bdim.mp3`（orig: `bdim_yamaha_noise_collector_24292.mp3`）— https://freesound.org/s/24292/ — NoiseCollector / Yamaha Bdim — https://creativecommons.org/licenses/by/3.0/
