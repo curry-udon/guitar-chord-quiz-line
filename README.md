@@ -15,7 +15,9 @@ npm run dev
 
 ## LINE（LIFF）接続手順
 
-**本番 URL（Endpoint）:** https://curry-udon.github.io/guitar-chord-quiz-line/
+**本番 URL（Endpoint）:** https://curry-udon.github.io/guitar-chord-quiz-line/  
+**LIFF URL:** https://liff.line.me/2011463729-2nZDmvbp  
+**LIFF ID:** `2011463729-2nZDmvbp`
 
 1. [LINE Developers](https://developers.line.biz/) でプロバイダー／チャネル作成（LINEログイン or Messaging API）
 2. LIFF アプリを追加
