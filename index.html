@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <title>ギターコードクイズ</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <p class="eyebrow" id="liff-status">準備中…</p>
+        <h1>ギターコードクイズ</h1>
+        <p class="sub" id="subtitle">開放弦の音を聞いて、音名を選んでください</p>
+      </header>
+
+      <section class="score-row">
+        <span>正解 <strong id="correct">0</strong></span>
+        <span>ミス <strong id="wrong">0</strong></span>
+        <span>連続 <strong id="streak">0</strong></span>
+      </section>
+
+      <section class="player-card">
+        <button type="button" id="play-btn" class="play-btn" aria-label="再生">
+          ▶ 再生
+        </button>
+        <p class="hint" id="hint">再生してから選択肢をタップ</p>
+      </section>
+
+      <section class="choices" id="choices" aria-label="選択肢"></section>
+
+      <p class="feedback" id="feedback" role="status"></p>
+
+      <section class="wave-panel" id="wave-panel" hidden>
+        <p class="wave-caption" id="wave-caption"></p>
+        <div class="wave-crop" id="wave-crop">
+          <img
+            src="/guitar-open-strings-sine.svg"
+            alt="開放弦のサイン波"
+            draggable="false"
+          />
+        </div>
+        <p class="staff-caption" id="staff-caption"></p>
+        <div class="staff-crop" id="staff-crop">
+          <img
+            src="/guitar-open-strings-sine.svg"
+            alt="大譜表上の開放弦"
+            draggable="false"
+          />
+          <span class="staff-mark" id="staff-mark" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <label class="mode">
+          モード
+          <select id="mode-select">
+            <option value="open-strings" selected>初級：開放弦</option>
+            <option value="canon-c">カノン進行（C）</option>
+            <option value="canon-d">カノン進行（D）</option>
+          </select>
+        </label>
+        <p class="credit">
+          音源: Freesound（詳細は public/audio/ATTRIBUTION.md）
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
