@@ -372,8 +372,13 @@ async function initLiff() {
 
   try {
     await liff.init({ liffId });
+    // ブラウザ／Cursor プレビューではログイン強制しない（音声テストしやすくする）
     if (!liff.isLoggedIn()) {
-      liff.login();
+      if (liff.isInClient()) {
+        liff.login();
+        return;
+      }
+      el.status.textContent = "ブラウザ確認モード（LINE外）";
       return;
     }
     const profile = await liff.getProfile();
@@ -384,16 +389,18 @@ async function initLiff() {
   }
 }
 
-el.play.addEventListener("click", onPlay);
-// iOS LINE では touchend の方がジェスチャとして通りやすい場合がある
-el.play.addEventListener(
-  "touchend",
-  (ev) => {
-    ev.preventDefault();
-    onPlay();
-  },
-  { passive: false },
-);
+let playBusy = false;
+async function onPlayGuarded() {
+  if (playBusy) return;
+  playBusy = true;
+  try {
+    await onPlay();
+  } finally {
+    playBusy = false;
+  }
+}
+
+el.play.addEventListener("click", onPlayGuarded);
 el.mode.addEventListener("change", () => {
   state.modeKey = el.mode.value;
   state.correct = 0;
