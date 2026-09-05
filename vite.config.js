@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 
-// GitHub project Pages: https://<user>.github.io/guitar-chord-quiz-line/
+// GitHub Pages project site needs a subpath; local uses "/"
 export default defineConfig({
-  base: process.env.VITE_BASE || "/guitar-chord-quiz-line/",
+  base: process.env.VITE_BASE || "/",
 });

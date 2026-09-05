@@ -15,13 +15,19 @@ npm run dev
 
 ## LINE（LIFF）接続手順
 
+**本番 URL（Endpoint）:** https://curry-udon.github.io/guitar-chord-quiz-line/
+
 1. [LINE Developers](https://developers.line.biz/) でプロバイダー／チャネル作成（LINEログイン or Messaging API）
 2. LIFF アプリを追加
-   - Endpoint URL: デプロイ先の HTTPS（例: `https://xxxx.vercel.app/`）
+   - Endpoint URL: `https://curry-udon.github.io/guitar-chord-quiz-line/`
    - Size: Full
-3. 発行された **LIFF ID** を `.env` の `VITE_LIFF_ID` に設定
-4. `npm run build` して静的ホストへデプロイ（Vercel / Netlify / Cloudflare Pages 等）
+   - Scope: `profile`
+3. 発行された **LIFF ID** を GitHub Actions secret `VITE_LIFF_ID` に設定  
+   （またはローカル `.env` の `VITE_LIFF_ID`）
+4. `main` へ push（または Actions の Deploy を再実行）して再デプロイ
 5. LINE アプリから LIFF URL（`https://liff.line.me/{LIFF_ID}`）を開く
+
+> 注: 当初想定の Vercel は CLI 未ログインのため、同等の HTTPS 公開として **GitHub Pages** を使用。
 
 ## クイズ内容
 
