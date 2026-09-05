@@ -8,6 +8,10 @@ const ANSWER_HOLD_MS = 1100;
 const STAFF_CROP_Y = 740;
 const STAFF_CROP_H = 252;
 
+/** GitHub Pages のサブパス対応（例: /guitar-chord-quiz-line/audio/...） */
+const asset = (path) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+
 const MODES = /** @type {Record<string, QuizMode>} */ ({
   "open-strings": {
     name: "初級：開放弦",
@@ -16,7 +20,7 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       {
         id: "E2",
         label: "E",
-        src: "/audio/open_E2.mp3",
+        src: asset("audio/open_E2.mp3"),
         waveY: 620,
         waveCaption: "6弦 E2 · 82.41 Hz",
         staffCaption: "大譜表：ヘ音記号の下・加線（下第1線）の上",
@@ -26,7 +30,7 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       {
         id: "A2",
         label: "A",
-        src: "/audio/open_A2.mp3",
+        src: asset("audio/open_A2.mp3"),
         waveY: 516,
         waveCaption: "5弦 A2 · 110.00 Hz",
         staffCaption: "大譜表：ヘ音記号の第1間（一番下の線のすぐ上）",
@@ -36,7 +40,7 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       {
         id: "D3",
         label: "D",
-        src: "/audio/open_D3.mp3",
+        src: asset("audio/open_D3.mp3"),
         waveY: 412,
         waveCaption: "4弦 D3 · 146.83 Hz",
         staffCaption: "大譜表：ヘ音記号の第3線（真ん中の線）",
@@ -46,7 +50,7 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       {
         id: "G3",
         label: "G",
-        src: "/audio/open_G3.mp3",
+        src: asset("audio/open_G3.mp3"),
         waveY: 308,
         waveCaption: "3弦 G3 · 196.00 Hz",
         staffCaption: "大譜表：ヘ音記号の第4間（一番上の間）",
@@ -56,7 +60,7 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       {
         id: "B3",
         label: "B",
-        src: "/audio/open_B3.mp3",
+        src: asset("audio/open_B3.mp3"),
         waveY: 204,
         waveCaption: "2弦 B3 · 246.94 Hz",
         staffCaption: "大譜表：ヘ音記号の上・中央ド(C4)のすぐ下",
@@ -66,7 +70,7 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
       {
         id: "E4",
         label: "e",
-        src: "/audio/open_E4.mp3",
+        src: asset("audio/open_E4.mp3"),
         waveY: 100,
         waveCaption: "1弦 E4 · 329.63 Hz",
         staffCaption: "大譜表：ト音記号の第1線（一番下の線）",
@@ -79,22 +83,22 @@ const MODES = /** @type {Record<string, QuizMode>} */ ({
     name: "カノン進行（C）",
     subtitle: "音を聞いて、コードを選んでください",
     items: [
-      { id: "C", label: "C", src: "/audio/C.mp3" },
-      { id: "G", label: "G", src: "/audio/G.mp3" },
-      { id: "Am", label: "Am", src: "/audio/Am.mp3" },
-      { id: "Em", label: "Em", src: "/audio/Em.mp3" },
-      { id: "F", label: "F", src: "/audio/F.mp3" },
+      { id: "C", label: "C", src: asset("audio/C.mp3") },
+      { id: "G", label: "G", src: asset("audio/G.mp3") },
+      { id: "Am", label: "Am", src: asset("audio/Am.mp3") },
+      { id: "Em", label: "Em", src: asset("audio/Em.mp3") },
+      { id: "F", label: "F", src: asset("audio/F.mp3") },
     ],
   },
   "canon-d": {
     name: "カノン進行（D）",
     subtitle: "音を聞いて、コードを選んでください",
     items: [
-      { id: "D", label: "D", src: "/audio/D.mp3" },
-      { id: "A", label: "A", src: "/audio/A.mp3" },
-      { id: "Bm", label: "Bm", src: "/audio/Bm.mp3" },
-      { id: "F#m", label: "F#m", src: "/audio/Fshm.mp3" },
-      { id: "G", label: "G", src: "/audio/G.mp3" },
+      { id: "D", label: "D", src: asset("audio/D.mp3") },
+      { id: "A", label: "A", src: asset("audio/A.mp3") },
+      { id: "Bm", label: "Bm", src: asset("audio/Bm.mp3") },
+      { id: "F#m", label: "F#m", src: asset("audio/Fshm.mp3") },
+      { id: "G", label: "G", src: asset("audio/G.mp3") },
     ],
   },
 });
