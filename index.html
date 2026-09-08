@@ -7,6 +7,10 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
     <title>ギターコードクイズ</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Music&display=swap"
+    />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -24,12 +28,35 @@
       </section>
 
       <section class="player-card">
+        <div class="visual-prompt" id="visual-prompt" hidden>
+          <p class="visual-direction" id="visual-direction"></p>
+          <div class="visual-main" id="visual-main"></div>
+          <p class="visual-meta" id="visual-meta"></p>
+        </div>
+
         <button type="button" id="play-btn" class="play-btn" aria-label="再生">
           ▶ 再生
         </button>
         <p class="hint" id="hint">再生してから選択肢をタップ</p>
         <!-- LINE WebView / iOS 向け: DOM 上の audio を再利用する -->
         <audio id="player" playsinline preload="auto" hidden></audio>
+
+        <section
+          class="piano-roll"
+          id="piano-roll"
+          aria-label="ピアノロール"
+        >
+          <div class="piano-roll-ruler" aria-hidden="true">
+            <span class="piano-roll-ruler-gutter"></span>
+            <span>1</span><span>2</span><span>3</span><span>4</span>
+          </div>
+          <div class="piano-roll-body">
+            <div class="piano-keys" id="piano-keys"></div>
+            <div class="piano-grid" id="piano-grid">
+              <div class="piano-notes" id="piano-notes"></div>
+            </div>
+          </div>
+        </section>
       </section>
 
       <section class="choices" id="choices" aria-label="選択肢"></section>
@@ -56,16 +83,108 @@
         </div>
       </section>
 
+      <div class="overlay" id="streak-confirm" hidden>
+        <div class="overlay-card" role="dialog" aria-labelledby="streak-confirm-title">
+          <p class="overlay-title" id="streak-confirm-title">
+            12問連続正解です！
+          </p>
+          <p class="overlay-body">次のモードに行きますか？</p>
+          <div class="overlay-actions">
+            <button type="button" class="overlay-btn primary" id="streak-yes">
+              はい
+            </button>
+            <button type="button" class="overlay-btn" id="streak-no">
+              いいえ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay" id="mode-picker" hidden>
+        <div class="overlay-card mode-picker-card" role="dialog" aria-labelledby="mode-picker-title">
+          <p class="overlay-title" id="mode-picker-title">モードを選んでください</p>
+          <div class="mode-picker-list" id="mode-picker-list"></div>
+          <button type="button" class="overlay-btn" id="mode-picker-cancel">
+            キャンセル
+          </button>
+        </div>
+      </div>
+
+      <div class="overlay" id="paywall" hidden>
+        <div class="overlay-card" role="dialog" aria-labelledby="paywall-title">
+          <p class="overlay-title" id="paywall-title">Premium で解放</p>
+          <p class="overlay-body" id="paywall-body"></p>
+          <p class="paywall-price" id="paywall-price"></p>
+          <div class="overlay-actions paywall-actions">
+            <button type="button" class="overlay-btn primary" id="paywall-buy">
+              Stripe で解放する
+            </button>
+            <button type="button" class="overlay-btn" id="paywall-dev">
+              開発用に解放
+            </button>
+            <button type="button" class="overlay-btn" id="paywall-cancel">
+              もどる
+            </button>
+          </div>
+          <p class="paywall-note">
+            Stripe Checkout で買い切ります。ローカルでは API（VITE_API_BASE）と開発用解放が使えます。
+          </p>
+        </div>
+      </div>
+
       <footer class="footer">
         <label class="mode">
           モード
           <select id="mode-select">
-            <option value="open-strings" selected>初級：開放弦</option>
-            <option value="canon-c">カノン進行（C）</option>
-            <option value="diatonic-c">ダイアトニック（C）</option>
-            <option value="canon-d">カノン進行（D）</option>
+            <optgroup label="練習">
+              <option value="practice-staff">練習：大譜表</option>
+            </optgroup>
+            <optgroup label="暗記">
+              <option value="memorize-solfege">暗記：コード（ドレミ）</option>
+              <option value="memorize-staff">暗記：大譜表（E2〜E5）</option>
+              <option value="memorize-diagram-diatonic">
+                暗記：ダイアグラム・ダイアトニック
+              </option>
+              <option value="memorize-diagram-canon">
+                暗記：ダイアグラム・カノン（C）
+              </option>
+              <option value="memorize-diagram-open">
+                暗記：ダイアグラム・開放弦
+              </option>
+              <option value="memorize-tab-diatonic">
+                暗記：TAB・ダイアトニック
+              </option>
+              <option value="memorize-tab-canon">暗記：TAB・カノン（C）</option>
+              <option value="memorize-tab-open">暗記：TAB・開放弦</option>
+              <option value="memorize-tab-tones">
+                暗記：TAB・構成音（アルペジオ）
+              </option>
+            </optgroup>
+            <optgroup label="聴音">
+              <option value="open-strings" selected>初級：開放弦</option>
+              <option value="practice-open-strings">練習：開放弦</option>
+              <option value="diatonic-c">ダイアトニック（C）</option>
+              <option value="practice-diatonic-c">
+                練習：ダイアトニック（C）
+              </option>
+              <option value="canon-c">カノン進行（C）</option>
+              <option value="canon-d">カノン進行（D）</option>
+            </optgroup>
           </select>
         </label>
+
+        <fieldset class="handedness" id="handedness-field" hidden>
+          <legend>利き手（ダイアグラム）</legend>
+          <label>
+            <input type="radio" name="handedness" value="right" checked />
+            右利き
+          </label>
+          <label>
+            <input type="radio" name="handedness" value="left" />
+            左利き
+          </label>
+        </fieldset>
+
         <p class="credit">
           音源: Freesound（詳細は public/audio/ATTRIBUTION.md）
         </p>

@@ -1,0 +1,23 @@
+name = "guitar-chord-quiz-api"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+# 本番フロント（CORS）
+[vars]
+FRONTEND_ORIGIN = "https://curry-udon.github.io"
+# Checkout 完了後の戻り先（フル URL を secrets / vars で上書き可）
+SUCCESS_URL = "https://curry-udon.github.io/guitar-chord-quiz-line/?premium=success"
+CANCEL_URL = "https://curry-udon.github.io/guitar-chord-quiz-line/?premium=cancel"
+PRODUCT_NAME = "ギターコードクイズ Premium"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gcq-premium"
+# `wrangler d1 create gcq-premium` の ID に差し替え
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# シークレット（wrangler secret put）:
+#   LINE_CHANNEL_ID
+#   STRIPE_SECRET_KEY
+#   STRIPE_WEBHOOK_SECRET
+#   STRIPE_PRICE_ID   … または単価 STRIPE_UNIT_AMOUNT=980

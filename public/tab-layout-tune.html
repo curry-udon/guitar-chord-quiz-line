@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TAB譜・レイアウト調整</title>
+    <style>
+      :root {
+        font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+        color: #1a222c;
+        background: #e8ecf1;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        max-width: 720px;
+      }
+      h1 {
+        font-size: 1.1rem;
+        margin: 0 0 8px;
+      }
+      .hint {
+        color: #5a6673;
+        font-size: 0.85rem;
+        margin: 0 0 16px;
+        line-height: 1.45;
+      }
+      .stage {
+        background: #f7f8fa;
+        border: 1px solid #c5ced8;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .tab-quiz {
+        width: min(100%, 320px);
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 8px;
+      }
+      .tab-quiz .tb-string {
+        stroke: #1a222c;
+        stroke-width: 1.25;
+      }
+      .tab-quiz .tb-knockout {
+        fill: #fff;
+      }
+      .tab-quiz .tb-num {
+        fill: #1a222c;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-weight: 800;
+      }
+      fieldset {
+        margin-top: 14px;
+        border: 1px solid #c5ced8;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px 12px 12px;
+      }
+      legend {
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      label {
+        display: grid;
+        grid-template-columns: 100px 1fr 48px;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+        font-size: 0.82rem;
+      }
+      input[type="range"] {
+        width: 100%;
+      }
+      .out {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        color: #5a6673;
+      }
+      .code {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        background: #1a222c;
+        color: #e8eef5;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.78rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 700;
+        cursor: pointer;
+        background: #3dd6c6;
+        color: #062824;
+      }
+      button.secondary {
+        background: #d7dee7;
+        color: #1a222c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TAB譜・数字レイアウト調整</h1>
+    <p class="hint">
+      開放弦6本をじゃらーん（全部
+      <strong>0</strong>）のTAB。数字の大きさ・左右位置を合わせて、下の数値を
+      <code>tab.js</code> の <code>TAB_LAYOUT</code> に転記する。
+    </p>
+
+    <div class="stage">
+      <div id="preview"></div>
+    </div>
+
+    <fieldset>
+      <legend>数字</legend>
+      <label
+        >大きさ
+        <input id="numSize" type="range" min="14" max="40" step="1" />
+        <span class="out" id="numSizeO"></span
+      ></label>
+      <label
+        >左右位置
+        <input id="numXRatio" type="range" min="0.15" max="0.85" step="0.01" />
+        <span class="out" id="numXRatioO"></span
+      ></label>
+    </fieldset>
+
+    <div class="code" id="snippet"></div>
+    <div class="actions">
+      <button type="button" id="copy">数値をコピー</button>
+      <button type="button" class="secondary" id="reset">初期値に戻す</button>
+    </div>
+
+    <script type="module">
+      // アプリと同じ描画（Vite 外なので BASE は相対）
+      const OPEN_SIX = [0, 0, 0, 0, 0, 0]; // 6弦→1弦 全部開放
+      const DEFAULTS = { numSize: 25, numXRatio: 0.45 };
+
+      const els = {
+        preview: document.getElementById("preview"),
+        snippet: document.getElementById("snippet"),
+        numSize: document.getElementById("numSize"),
+        numXRatio: document.getElementById("numXRatio"),
+        numSizeO: document.getElementById("numSizeO"),
+        numXRatioO: document.getElementById("numXRatioO"),
+      };
+
+      function renderTab(frets6to1, layout) {
+        const numSize = layout.numSize;
+        const numXRatio = layout.numXRatio;
+        const display = [...frets6to1].reverse();
+        const muteAsX = display.filter((f) => f != null).length > 1;
+
+        const W = 280;
+        const H = 168;
+        const padL = 8;
+        const padR = 16;
+        const padT = 16;
+        const padB = 14;
+        const stringCount = 6;
+        const gridH = H - padT - padB;
+        const spacing = gridH / (stringCount - 1);
+        const yAt = (i) => padT + i * spacing;
+
+        const clefH = gridH;
+        const clefW = (clefH * 87) / 269;
+        const clefX = padL;
+        const clefY = padT;
+
+        const contentL = Math.round(clefX + clefW + 8);
+        const contentR = W - padR;
+        const numX = contentL + (contentR - contentL) * numXRatio;
+        const lineL = padL;
+        const lineR = contentR;
+        const bw1 = Math.round(numSize * 0.95);
+        const bw2 = Math.round(numSize * 1.35);
+        const bh = Math.round(numSize * 0.95);
+
+        let marks = "";
+        marks += `<image href="./tab-clef.png" x="${clefX}" y="${clefY}" width="${clefW}" height="${clefH}" preserveAspectRatio="none" />`;
+        for (let i = 0; i < stringCount; i += 1) {
+          const y = yAt(i);
+          marks += `<line class="tb-string" x1="${lineL}" y1="${y}" x2="${lineR}" y2="${y}" />`;
+        }
+        display.forEach((fret, i) => {
+          const y = yAt(i);
+          let label = null;
+          if (fret == null) {
+            if (muteAsX) label = "×";
+          } else label = String(fret);
+          if (label == null) return;
+          const bw = label.length > 1 ? bw2 : bw1;
+          marks += `<rect class="tb-knockout" x="${numX - bw / 2}" y="${y - bh / 2}" width="${bw}" height="${bh}" />`;
+          marks += `<text class="tb-num" x="${numX}" y="${y}" font-size="${numSize}" dominant-baseline="middle" text-anchor="middle">${label}</text>`;
+        });
+        return `<svg class="tab-quiz" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${marks}</svg>`;
+      }
+
+      function vals() {
+        return {
+          numSize: Number(els.numSize.value),
+          numXRatio: Number(els.numXRatio.value),
+        };
+      }
+
+      function applyDefaults() {
+        els.numSize.value = String(DEFAULTS.numSize);
+        els.numXRatio.value = String(DEFAULTS.numXRatio);
+      }
+
+      function render() {
+        const v = vals();
+        els.numSizeO.textContent = String(v.numSize);
+        els.numXRatioO.textContent = v.numXRatio.toFixed(2);
+        els.preview.innerHTML = renderTab(OPEN_SIX, v);
+        els.snippet.textContent = `// tab.js の TAB_LAYOUT に転記
+TAB_LAYOUT = {
+  numSize: ${v.numSize},
+  numXRatio: ${v.numXRatio.toFixed(2)},
+};`;
+      }
+
+      applyDefaults();
+      render();
+      els.numSize.addEventListener("input", render);
+      els.numXRatio.addEventListener("input", render);
+      document.getElementById("reset").addEventListener("click", () => {
+        applyDefaults();
+        render();
+      });
+      document.getElementById("copy").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(els.snippet.textContent);
+        alert("コピーしました");
+      });
+    </script>
+  </body>
+</html>

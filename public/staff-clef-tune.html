@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>大譜表・音部記号の位置合わせ</title>
+    <!-- Noto Music: Unicode 𝄞/𝄢 対応 -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Music&display=swap"
+    />
+    <!-- Bravura Text / Petaluma Text: SMuFL（別コードポイント） -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/bravura-text@5.2.5/index.css"
+    />
+    <style>
+      @font-face {
+        font-family: "Petaluma Text";
+        src: url("https://cdn.jsdelivr.net/gh/steinbergmedia/petaluma@master/redist/otf/PetalumaText.otf")
+          format("opentype");
+        font-display: swap;
+      }
+      :root {
+        font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+        color: #1a222c;
+        background: #e8ecf1;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        max-width: 720px;
+      }
+      h1 {
+        font-size: 1.1rem;
+        margin: 0 0 8px;
+      }
+      .hint {
+        color: #5a6673;
+        font-size: 0.85rem;
+        margin: 0 0 16px;
+        line-height: 1.45;
+      }
+      .stage {
+        background: #f7f8fa;
+        border: 1px solid #c5ced8;
+        border-radius: 12px;
+        padding: 12px;
+        overflow: auto;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+        background: #fff;
+      }
+      .st-line {
+        stroke: #1a222c;
+        stroke-width: 1.5;
+      }
+      .st-brace {
+        stroke: #1a222c;
+        stroke-width: 3;
+        stroke-linecap: round;
+      }
+      .st-guide {
+        stroke: #3dd6c6;
+        stroke-width: 1;
+        stroke-dasharray: 4 3;
+        opacity: 0.85;
+      }
+      .st-guide-label {
+        fill: #2a9d90;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .st-clef {
+        fill: #1a222c;
+      }
+      .panel {
+        margin-top: 16px;
+        display: grid;
+        gap: 12px;
+      }
+      fieldset {
+        border: 1px solid #c5ced8;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px 12px 12px;
+      }
+      legend {
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 0 4px;
+      }
+      label {
+        display: grid;
+        grid-template-columns: 72px 1fr 48px;
+        gap: 8px;
+        align-items: center;
+        margin: 6px 0;
+        font-size: 0.82rem;
+      }
+      .font-pick label {
+        grid-template-columns: auto 1fr;
+        gap: 10px;
+        margin: 8px 0;
+        cursor: pointer;
+      }
+      .font-pick .sample {
+        font-size: 1.6rem;
+        line-height: 1;
+        letter-spacing: 0.15em;
+      }
+      .font-pick .meta {
+        color: #5a6673;
+        font-size: 0.75rem;
+      }
+      input[type="range"] {
+        width: 100%;
+      }
+      .out {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        color: #5a6673;
+      }
+      .code {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        background: #1a222c;
+        color: #e8eef5;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.78rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 700;
+        cursor: pointer;
+        background: #3dd6c6;
+        color: #062824;
+      }
+      button.secondary {
+        background: #d7dee7;
+        color: #1a222c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>大譜表・ト音／ヘ音の位置合わせ（アプリ実装前）</h1>
+    <p class="hint">
+      五線は固定。破線は <strong>G線</strong> / <strong>F線</strong>。
+      まずフォントを選び、次に位置・大きさを合わせる。下の数値を
+      <code>staff.js</code> に転記する。
+    </p>
+
+    <div class="stage">
+      <svg id="staff" viewBox="0 0 300 268" aria-hidden="true"></svg>
+    </div>
+
+    <div class="panel">
+      <fieldset class="font-pick">
+        <legend>記号フォント</legend>
+        <label>
+          <input type="radio" name="font" value="system" checked />
+          <span>
+            <span class="sample" style="font-family: 'Apple Symbols', 'Segoe UI Symbol', serif"
+              >𝄞 𝄢</span
+            >
+            OS標準（いまのアプリ）
+            <div class="meta">端末ごとに形が変わる</div>
+          </span>
+        </label>
+        <label>
+          <input type="radio" name="font" value="noto" />
+          <span>
+            <span class="sample" style="font-family: 'Noto Music', serif"
+              >𝄞 𝄢</span
+            >
+            Noto Music（Google）
+            <div class="meta">Unicode 𝄞/𝄢・Webフォントで端末差を抑える</div>
+          </span>
+        </label>
+        <label>
+          <input type="radio" name="font" value="bravura" />
+          <span>
+            <span class="sample" style="font-family: 'Bravura Text'"
+              >&#xE050; &#xE062;</span
+            >
+            Bravura Text（楽譜標準・クラシック寄り）
+            <div class="meta">SMuFL・プロ記譜ソフトと同系</div>
+          </span>
+        </label>
+        <label>
+          <input type="radio" name="font" value="petaluma" />
+          <span>
+            <span class="sample" style="font-family: 'Petaluma Text'"
+              >&#xE050; &#xE062;</span
+            >
+            Petaluma Text（手書き風）
+            <div class="meta">SMuFL・やわらかい線</div>
+          </span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>ト音記号</legend>
+        <label
+          >X <input id="tx" type="range" min="-20" max="80" step="1" /><span
+            class="out"
+            id="txo"
+          ></span
+        ></label>
+        <label
+          >Y <input id="ty" type="range" min="40" max="200" step="1" /><span
+            class="out"
+            id="tyo"
+          ></span
+        ></label>
+        <label
+          >Size
+          <input id="ts" type="range" min="40" max="140" step="1" /><span
+            class="out"
+            id="tso"
+          ></span
+        ></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>ヘ音記号</legend>
+        <label
+          >X <input id="bx" type="range" min="-20" max="80" step="1" /><span
+            class="out"
+            id="bxo"
+          ></span
+        ></label>
+        <label
+          >Y <input id="by" type="range" min="100" max="260" step="1" /><span
+            class="out"
+            id="byo"
+          ></span
+        ></label>
+        <label
+          >Size
+          <input id="bs" type="range" min="40" max="140" step="1" /><span
+            class="out"
+            id="bso"
+          ></span
+        ></label>
+      </fieldset>
+    </div>
+
+    <div class="code" id="snippet"></div>
+    <div class="actions">
+      <button type="button" id="copy">数値をコピー</button>
+      <button type="button" class="secondary" id="reset">初期値に戻す</button>
+    </div>
+
+    <script type="module">
+      const STEP = 8;
+      const Y_A3 = 172;
+      const STEPS_FROM_G3 = { G3: 0, A3: 1, B3: 2, C4: 3, D4: 4, E4: 5, F4: 6 };
+      const noteY = (id) => Y_A3 - (STEPS_FROM_G3[id] - 1) * STEP;
+
+      const FONTS = {
+        system: {
+          family: '"Segoe UI Symbol", "Apple Symbols", "Noto Music", "DejaVu Sans", serif',
+          treble: "𝄞",
+          bass: "𝄢",
+          label: "system",
+        },
+        noto: {
+          family: '"Noto Music", serif',
+          treble: "𝄞",
+          bass: "𝄢",
+          label: "Noto Music",
+        },
+        bravura: {
+          family: '"Bravura Text"',
+          treble: "\uE050",
+          bass: "\uE062",
+          label: "Bravura Text",
+        },
+        petaluma: {
+          family: '"Petaluma Text"',
+          treble: "\uE050",
+          bass: "\uE062",
+          label: "Petaluma Text",
+        },
+      };
+
+      const DEFAULTS = {
+        tx: 24,
+        ty: noteY("E4") - STEP * 2,
+        ts: 92,
+        bx: 28,
+        by: noteY("A3") + STEP * 2,
+        bs: 78,
+      };
+
+      const els = {
+        staff: document.getElementById("staff"),
+        snippet: document.getElementById("snippet"),
+        tx: document.getElementById("tx"),
+        ty: document.getElementById("ty"),
+        ts: document.getElementById("ts"),
+        bx: document.getElementById("bx"),
+        by: document.getElementById("by"),
+        bs: document.getElementById("bs"),
+        txo: document.getElementById("txo"),
+        tyo: document.getElementById("tyo"),
+        tso: document.getElementById("tso"),
+        bxo: document.getElementById("bxo"),
+        byo: document.getElementById("byo"),
+        bso: document.getElementById("bso"),
+      };
+
+      function selectedFont() {
+        const id =
+          document.querySelector('input[name="font"]:checked')?.value ||
+          "system";
+        return FONTS[id] || FONTS.system;
+      }
+
+      function vals() {
+        return {
+          tx: Number(els.tx.value),
+          ty: Number(els.ty.value),
+          ts: Number(els.ts.value),
+          bx: Number(els.bx.value),
+          by: Number(els.by.value),
+          bs: Number(els.bs.value),
+        };
+      }
+
+      function applyDefaults() {
+        els.tx.value = String(DEFAULTS.tx);
+        els.ty.value = String(Math.round(DEFAULTS.ty));
+        els.ts.value = String(DEFAULTS.ts);
+        els.bx.value = String(DEFAULTS.bx);
+        els.by.value = String(Math.round(DEFAULTS.by));
+        els.bs.value = String(DEFAULTS.bs);
+      }
+
+      function render() {
+        const v = vals();
+        const font = selectedFont();
+        els.txo.textContent = String(v.tx);
+        els.tyo.textContent = String(v.ty);
+        els.tso.textContent = String(v.ts);
+        els.bxo.textContent = String(v.bx);
+        els.byo.textContent = String(v.by);
+        els.bso.textContent = String(v.bs);
+
+        const left = 72;
+        const right = 280;
+        const yE4 = noteY("E4");
+        const yA3 = noteY("A3");
+        const trebleLines = [0, 1, 2, 3, 4].map((i) => yE4 - i * STEP * 2);
+        const bassLines = [0, 1, 2, 3, 4].map((i) => yA3 + i * STEP * 2);
+        const yG4 = yE4 - STEP * 2;
+        const yF3 = yA3 + STEP * 2;
+
+        let marks = "";
+        trebleLines.forEach((ly) => {
+          marks += `<line class="st-line" x1="${left}" y1="${ly}" x2="${right}" y2="${ly}" />`;
+        });
+        bassLines.forEach((ly) => {
+          marks += `<line class="st-line" x1="${left}" y1="${ly}" x2="${right}" y2="${ly}" />`;
+        });
+        marks += `<line class="st-brace" x1="${left - 14}" y1="${trebleLines[4]}" x2="${left - 14}" y2="${bassLines[4]}" />`;
+
+        marks += `<line class="st-guide" x1="${left - 8}" y1="${yG4}" x2="${right}" y2="${yG4}" />`;
+        marks += `<text class="st-guide-label" x="${right - 28}" y="${yG4 - 4}">G線</text>`;
+        marks += `<line class="st-guide" x1="${left - 8}" y1="${yF3}" x2="${right}" y2="${yF3}" />`;
+        marks += `<text class="st-guide-label" x="${right - 28}" y="${yF3 - 4}">F線</text>`;
+
+        marks += `<text class="st-clef" x="${v.tx}" y="${v.ty}" font-size="${v.ts}" font-family='${font.family}' dominant-baseline="middle">${font.treble}</text>`;
+        marks += `<text class="st-clef" x="${v.bx}" y="${v.by}" font-size="${v.bs}" font-family='${font.family}' dominant-baseline="middle">${font.bass}</text>`;
+
+        els.staff.innerHTML = marks;
+
+        els.snippet.textContent = `// staff.js に転記する値
+CLEF_FONT  = "${font.label}"
+CLEF_TREBLE = { x: ${v.tx}, y: ${v.ty}, size: ${v.ts} }
+CLEF_BASS   = { x: ${v.bx}, y: ${v.by}, size: ${v.bs} }
+// 参考: G線 y=${yG4}, F線 y=${yF3}, left=${left}`;
+      }
+
+      applyDefaults();
+      render();
+      ["tx", "ty", "ts", "bx", "by", "bs"].forEach((id) => {
+        els[id].addEventListener("input", render);
+      });
+      document.querySelectorAll('input[name="font"]').forEach((el) => {
+        el.addEventListener("change", render);
+      });
+      document.getElementById("reset").addEventListener("click", () => {
+        applyDefaults();
+        render();
+      });
+      document.getElementById("copy").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(els.snippet.textContent);
+        alert("コピーしました");
+      });
+    </script>
+  </body>
+</html>

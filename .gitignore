@@ -3,5 +3,9 @@ dist/
 .DS_Store
 .env
 .env.local
+.deploy-secrets.env
+.deploy/
 *.log
 public/audio/_orig/
+backend/gcq-api/config.php
+backend/node_modules/

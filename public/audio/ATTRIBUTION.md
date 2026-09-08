@@ -23,7 +23,8 @@ Downloaded: 2026-09-04 22:13
 - **00_phrase_canon_d_nylon** — `00_phrase_canon_d_nylon_105230.mp3` — https://freesound.org/s/105230/ — license: https://creativecommons.org/licenses/sampling+/1.0/ — by svenmusik
 - **c_major_yamaha_bb** — `c_major_yamaha_bb_192199.mp3` — https://freesound.org/s/192199/ — license: https://creativecommons.org/licenses/by/3.0/ — by BiblicalBricksProductions
 - **g_major_yamaha_bb** — `g_major_yamaha_bb_192203.mp3` — https://freesound.org/s/192203/ — license: https://creativecommons.org/licenses/by/3.0/ — by BiblicalBricksProductions
-- **f_major_yamaha_bb** — `f_major_yamaha_bb_192204.mp3` — https://freesound.org/s/192204/ — license: https://creativecommons.org/licenses/by/3.0/ — by BiblicalBricksProductions
+- **f_major_yamaha_bb** — `f_major_yamaha_bb_192204.mp3` — https://freesound.org/s/192204/ — license: https://creativecommons.org/licenses/by/3.0/ — by BiblicalBricksProductions（旧・短く小さい）
+- **f_from_e_plus1_nylon** — `F.mp3` — SpeedY E major（https://freesound.org/s/8489/）を +1 半音して F メジャー（Eフォームのバレー）にしたもの。※以前の Em+1 は Fマイナーになる誤りだったため差し替え（2026-09-07）
 - **d_major_yamaha_bb** — `d_major_yamaha_bb_192200.mp3` — https://freesound.org/s/192200/ — license: https://creativecommons.org/licenses/by/3.0/ — by BiblicalBricksProductions
 - **a_major_yamaha_bb** — `a_major_yamaha_bb_192197.mp3` — https://freesound.org/s/192197/ — license: https://creativecommons.org/licenses/by/3.0/ — by BiblicalBricksProductions
 - **am_full_nylon_speedy** — `am_full_nylon_speedy_8455.mp3` — https://freesound.org/s/8455/ — license: https://? — by SpeedY

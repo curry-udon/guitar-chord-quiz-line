@@ -1,0 +1,21 @@
+# costuba.online/gcq-api/ 用
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /gcq-api/
+
+  # 実ファイルがあればそのまま
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # それ以外はフロントコントローラへ
+  RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+# config を直アクセス禁止
+<Files "config.php">
+  Require all denied
+</Files>
+<Files "config.example.php">
+  Require all denied
+</Files>
