@@ -151,18 +151,26 @@ export async function syncPremiumFromServer() {
   return data;
 }
 
+/** LINE LIFF ログイン済みか（課金に必須） */
+export async function isLiffLoggedIn() {
+  return Boolean(await getLineIdToken());
+}
+
 /**
- * Stripe Checkout へリダイレクト用 URL を取得
+ * Stripe Checkout へリダイレクト用 URL を取得（LINE ID トークン必須）
  * @returns {Promise<string>}
  */
 export async function createCheckoutUrl() {
   const base = getApiBase();
   if (!base) throw new Error("VITE_API_BASE が未設定です");
-  const body = await identityPayload();
+  const idToken = await getLineIdToken();
+  if (!idToken) {
+    throw new Error("購入は LINE アプリ内から開いてください");
+  }
   const res = await fetch(apiUrl("/api/checkout"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ idToken }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.url) {

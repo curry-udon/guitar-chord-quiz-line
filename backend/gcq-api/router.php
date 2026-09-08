@@ -84,6 +84,12 @@ if ($method === 'POST' && $path === '/api/checkout') {
     try {
         $body = gcq_read_json();
         $id = gcq_resolve_user_id($body);
+        // 課金は LINE ユーザーにのみ紐づける（anon 課金は端末依存で引き継げない）
+        if (($id['via'] ?? '') !== 'line') {
+            gcq_json(403, [
+                'error' => '購入は LINE アプリ内（LIFF）からのみ可能です',
+            ]);
+        }
         gcq_ensure_user($id['userId']);
         $session = gcq_create_checkout_session($id['userId']);
         if (empty($session['url'])) {

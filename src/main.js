@@ -11,6 +11,7 @@ import { audioForMidi } from "./memorize/audio.js";
 import {
   canAccessMode,
   createCheckoutUrl,
+  isLiffLoggedIn,
   devUnlockOnServer,
   getIsPremium,
   hasApi,
@@ -309,6 +310,7 @@ const el = {
   paywallBuy: document.getElementById("paywall-buy"),
   paywallDev: document.getElementById("paywall-dev"),
   paywallCancel: document.getElementById("paywall-cancel"),
+  paywallNote: document.getElementById("paywall-note"),
 };
 
 const state = {
@@ -1046,7 +1048,7 @@ function updatePremiumBadge() {
   }
 }
 
-function openPaywall(modeKey) {
+async function openPaywall(modeKey) {
   state.pendingModeKey = modeKey;
   closeModePicker();
   if (el.paywallBody) {
@@ -1054,6 +1056,18 @@ function openPaywall(modeKey) {
   }
   if (el.paywallPrice) {
     el.paywallPrice.textContent = PREMIUM_PRODUCT.priceLabel;
+  }
+  const inLiff = await isLiffLoggedIn();
+  if (el.paywallBuy) {
+    el.paywallBuy.disabled = !inLiff || !hasApi();
+    el.paywallBuy.textContent = inLiff
+      ? "Stripe で解放する"
+      : "LINEアプリ内で購入";
+  }
+  if (el.paywallNote) {
+    el.paywallNote.textContent = inLiff
+      ? "購入は LINE アプリ内からのみできます（機種変更後も同じ LINE アカウントで引き継ぎ）。"
+      : "ブラウザ単体では購入できません。LINE の公式アカウント／LIFF リンクから開いてください。";
   }
   if (el.paywall) el.paywall.hidden = false;
 }
@@ -1235,6 +1249,10 @@ el.paywallBuy?.addEventListener("click", async () => {
     setFeedback("API未設定のため開発用解放を使ってください。", "ng");
     return;
   }
+  if (!(await isLiffLoggedIn())) {
+    setFeedback("購入は LINE アプリ内から開いてください。", "ng");
+    return;
+  }
   try {
     el.paywallBuy.disabled = true;
     el.paywallBuy.textContent = "Checkout へ…";
@@ -1244,7 +1262,7 @@ el.paywallBuy?.addEventListener("click", async () => {
     console.error(err);
     setFeedback(`決済開始に失敗: ${err?.message || err}`, "ng");
     el.paywallBuy.disabled = false;
-    el.paywallBuy.textContent = "解放する";
+    el.paywallBuy.textContent = "Stripe で解放する";
   }
 });
 

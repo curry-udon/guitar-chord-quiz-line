@@ -204,7 +204,12 @@ export async function handleRequest(request, env) {
         return json(request, env, 503, { error: "STRIPE_SECRET_KEY 未設定" });
       }
       const body = await request.json();
-      const { userId } = await resolveUserId(env, body);
+      const { userId, via } = await resolveUserId(env, body);
+      if (via !== "line") {
+        return json(request, env, 403, {
+          error: "購入は LINE アプリ内（LIFF）からのみ可能です",
+        });
+      }
       await ensureUser(env, userId);
       const session = await createCheckoutSession({
         secretKey: env.STRIPE_SECRET_KEY,

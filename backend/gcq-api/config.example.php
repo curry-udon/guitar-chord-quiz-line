@@ -36,7 +36,7 @@ return [
         'https://costuba.online',
     ],
 
-    // LIFF 外ブラウザ用 anon: ID を許可するか
+    // LIFF 外ブラウザ用 anon: ID を /api/me 等で許可するか（Checkout は常に LINE 必須）
     'allow_anon' => true,
 
     // 設定時のみ /api/dev-unlock 有効。本番では空文字に
