@@ -4,13 +4,13 @@
 
 > このブロックは `チェックアウト` で自動更新される。タブを閉じる前の頭の退避先。
 
-- **日時**: 2026-09-08 12:18（ローカル）
+- **日時**: 2026-09-22 23:36（ローカル）
 - **スコープ**: ギターコードクイズ
-- **Done**: Costuba gcq-api＋Stripeテスト接続と LIFF限定課金を本番反映
-- **待ち**: なし
-- **未完了**: Stripe 本番化（本人確認・`sk_live`／本番 Webhook）・テスト購入の実機確認は任意
-- **次の一手**: 周知マーケティング案を1ページに洗い出す（導線・チャネル・最初の1施策）
-- **再開時に開く**: `/Users/sen/Development/guitar-chord-quiz-line/RESUME_NEXT_SESSION.md`
+- **Done**: Stripe本番化を開始（本人確認等を提出・審査中／ライブチェックリスト作成）
+- **待ち**: Stripe 審査完了（ダッシュボード／メール）
+- **未完了**: `sk_live`・本番 Webhook・サーバー config 更新・`dev_unlock` 無効化
+- **次の一手**: 審査完了後に `sk_live` と本番 Webhook（`…/api/webhook.php`）を用意 → config 更新＆デプロイ
+- **再開時に開く**: `/Users/sen/Development/guitar-chord-quiz-line/docs/STRIPE-LIVE-CHECKLIST.md`
 
 ---
 
