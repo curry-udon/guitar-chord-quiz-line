@@ -11,6 +11,6 @@
     "db:remote": "wrangler d1 execute gcq-premium --remote --file=./schema.sql"
   },
   "devDependencies": {
-    "wrangler": "^4.28.0"
+    "wrangler": "^4.59.1"
   }
 }
